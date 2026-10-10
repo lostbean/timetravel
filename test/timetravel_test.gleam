@@ -97,3 +97,37 @@ pub fn negative_go_to_clamps_to_first_retained_state_test() {
   assert timetravel.current(returned) == 44
   assert timetravel.position(returned) == #(1, 1)
 }
+
+pub fn custom_capacity_retains_only_requested_transitions_test() {
+  let assert Ok(#(initial, _)) =
+    timetravel.init_with_capacity(
+      arguments: 10,
+      with: fn(value) { #(value, effect.none()) },
+      capacity: 2,
+    )
+  let #(one, _) = dispatch(initial, timetravel.App(1))
+  let #(two, _) = dispatch(one, timetravel.App(2))
+  let #(three, _) = dispatch(two, timetravel.App(4))
+  assert timetravel.position(three) == #(2, 2)
+  let #(oldest, _) = dispatch(three, timetravel.GoTo(0))
+  assert timetravel.current(oldest) == 11
+  let #(latest, _) = dispatch(oldest, timetravel.ReturnToPresent)
+  assert timetravel.current(latest) == 17
+}
+
+pub fn invalid_capacity_does_not_initialise_application_test() {
+  let result =
+    timetravel.init_with_capacity(
+      arguments: Nil,
+      with: fn(_) { panic as "Application init must not run" },
+      capacity: 0,
+    )
+  assert result == Error(timetravel.InvalidCapacity(0))
+  let result =
+    timetravel.init_with_capacity(
+      arguments: Nil,
+      with: fn(_) { panic as "Application init must not run" },
+      capacity: -1,
+    )
+  assert result == Error(timetravel.InvalidCapacity(-1))
+}

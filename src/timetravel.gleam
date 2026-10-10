@@ -81,6 +81,7 @@ pub opaque type Model(model, app_message) {
     past: List(Snapshot(model, app_message)),
     future: List(Snapshot(model, app_message)),
     inspector_open: Bool,
+    capacity: Int,
   )
 }
 
@@ -117,9 +118,41 @@ pub fn init(
 ) -> #(Model(model, app_message), Effect(Message(app_message))) {
   let #(model, app_effect) = app_init(arguments)
   #(
-    Model(model, past: [], future: [], inspector_open: False),
+    Model(
+      model,
+      past: [],
+      future: [],
+      inspector_open: False,
+      capacity: history_limit,
+    ),
     effect.map(app_effect, App),
   )
+}
+
+/// Invalid number of retained transitions. Capacity must be positive.
+pub type ConfigurationError {
+  InvalidCapacity(Int)
+}
+
+/// Initialise a bounded inspector window with a caller-selected capacity.
+/// Validation happens before `app_init` runs. Capacity counts transitions;
+/// the selected model is retained in addition to those snapshots.
+/// This bounds the number of snapshots, not their byte size.
+pub fn init_with_capacity(
+  arguments arguments: arguments,
+  with app_init: fn(arguments) -> #(model, Effect(app_message)),
+  capacity capacity: Int,
+) -> Result(
+  #(Model(model, app_message), Effect(Message(app_message))),
+  ConfigurationError,
+) {
+  case capacity > 0 {
+    False -> Error(InvalidCapacity(capacity))
+    True -> {
+      let #(model, command) = init(arguments: arguments, with: app_init)
+      Ok(#(Model(..model, capacity: capacity), command))
+    }
+  }
 }
 
 /// Wrap an existing Lustre application with development-only time travel.
@@ -191,7 +224,7 @@ fn update_app(
           // Prepending makes the newest transition cheap to record. `take`
             // consequently discards the oldest transition when the limit is hit.
             past: [Snapshot(model.current, message), ..model.past]
-            |> list.take(history_limit),
+            |> list.take(model.capacity),
         )
       // Effects run only when a new present-day transition is recorded. Moving
       // through history never replays HTTP requests, storage writes, or timers.
