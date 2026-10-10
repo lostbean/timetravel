@@ -1,0 +1,10 @@
+# THROWAWAY: live capture and an independent inert inspector.
+name = "recording_demo"
+version = "0.0.0"
+target = "javascript"
+
+[dependencies]
+gleam_stdlib = "== 1.0.5"
+gleam_json = "== 3.1.0"
+lustre = "== 5.7.1"
+timetravel = { path = "../.." }

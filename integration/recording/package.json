@@ -1,0 +1,8 @@
+{
+  "name": "timetravel-recording-experiment",
+  "private": true,
+  "description": "THROWAWAY: independent live recording and inert replay",
+  "type": "module",
+  "scripts": { "test": "node check.mjs", "start": "node serve.mjs" },
+  "devDependencies": { "@playwright/test": "1.58.0" }
+}

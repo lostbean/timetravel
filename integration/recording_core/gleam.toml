@@ -1,0 +1,7 @@
+# THROWAWAY: portable recording through a separate public consumer.
+name = "recording_consumer"
+version = "0.0.0"
+target = "javascript"
+
+[dependencies]
+timetravel = { path = "../.." }

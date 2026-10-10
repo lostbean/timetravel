@@ -12,6 +12,9 @@
 /integration/*/build/
 /integration/*/dist/
 /integration/*/dist-minified/
+/integration/recording/node_modules/
+/integration/recording/report.json
+/integration/recording/recording.png
 
 # Erlang crash and analysis files
 erl_crash.dump

@@ -1,5 +1,9 @@
 # timetravel
 
+> Experimental fork branch: [recording and replay experiment](EXPERIMENT.md).
+> Adds a portable recording module and a separate live/replay demo. These changes
+> are unpublished; the upstream debugger documentation continues below.
+
 Development-only time travel and state inspection for Lustre applications.
 It records application messages and model snapshots, lets you navigate through
 the history, and suppresses effects while you inspect an earlier state.
