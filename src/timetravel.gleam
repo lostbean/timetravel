@@ -161,7 +161,7 @@ pub fn update(
     Back -> #(back(model), effect.none())
     Forward -> #(forward(model), effect.none())
     ReturnToPresent -> #(return_to_present(model), effect.none())
-    GoTo(position) -> #(go_to(model, position), effect.none())
+    GoTo(position) -> #(go_to(model, int.max(position, 0)), effect.none())
     ToggleInspector -> {
       let opening = !model.inspector_open
       let drag_effect = case opening {

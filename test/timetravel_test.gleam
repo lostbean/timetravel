@@ -81,3 +81,19 @@ pub fn history_is_limited_to_one_hundred_transitions_test() {
   assert timetravel.current(model) == 105
   assert timetravel.position(model) == #(100, 100)
 }
+
+pub fn negative_go_to_clamps_to_first_retained_state_test() {
+  let #(initial, _) = initialise(42)
+  let #(empty, _) = dispatch(initial, timetravel.GoTo(-1))
+  assert timetravel.current(empty) == 42
+  assert timetravel.position(empty) == #(0, 0)
+
+  let #(present, _) = dispatch(initial, timetravel.App(2))
+  let #(first, _) = dispatch(present, timetravel.GoTo(-100))
+  assert timetravel.current(first) == 42
+  assert timetravel.position(first) == #(0, 1)
+
+  let #(returned, _) = dispatch(first, timetravel.GoTo(100))
+  assert timetravel.current(returned) == 44
+  assert timetravel.position(returned) == #(1, 1)
+}
